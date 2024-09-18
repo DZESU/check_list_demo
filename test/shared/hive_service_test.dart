@@ -1,145 +1,84 @@
-import 'package:check_list_demo/shared/data/local/data_sources/hive_service.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:hive_test/hive_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:check_list_demo/shared/data/local/data_sources/hive_service.dart';
+import 'package:mockito/annotations.dart';
+import 'hive_service_test.mocks.dart';
 
-class MockBox<T> extends Mock implements Box<T> {}
-
-class MockHive extends Mock implements HiveInterface {}
-
+@GenerateMocks([Box])
 void main() {
-  const MethodChannel channel =
-      MethodChannel('plugins.flutter.io/path_provider');
-
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   late HiveService<String> hiveService;
   late MockBox<String> mockBox;
-  late MockHive mockHive;
 
-  setUp(() async {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (methodCall) async {
-      if (methodCall.method == 'getApplicationDocumentsDirectory') {
-        return '/mocked/directory';
-      }
-      return null;
-    });
-
+  setUp(() {
     mockBox = MockBox<String>();
-    mockHive = MockHive();
-    hiveService = HiveService<String>();
-
-    await mockHive.initFlutter();
+    hiveService = HiveService<String>(mockBox);
   });
 
-
   group('HiveService', () {
-    test('getBox should open a box if it is not already open', () async {
-      when(() => mockHive.isBoxOpen('testBox')).thenReturn(false);
-      when(() => mockHive.openBox<String>('testBox'))
-          .thenAnswer((_) async => mockBox);
-
-      final box = await hiveService.getBox('testBox');
-
-      expect(box, mockBox);
-      verify(() => mockHive.openBox<String>('testBox')).called(1);
-    });
-
-    test('getBox should return the box if it is already open', () async {
-      when(() => mockHive.isBoxOpen('testBox')).thenReturn(true);
-      when(() => mockHive.box<String>('testBox')).thenReturn(mockBox);
-
-      final box = await hiveService.getBox('testBox');
-
-      expect(box, mockBox);
-      verify(() => mockHive.box<String>('testBox')).called(1);
-    });
+    const String key = 'testKey';
+    const String value = 'testValue';
 
     test('clear should clear the box', () async {
-      when(() => mockHive.isBoxOpen('testBox')).thenReturn(true);
-      when(() => mockHive.box<String>('testBox')).thenReturn(mockBox);
-      when(() => mockBox.clear()).thenAnswer((_) async {
-        return 1;
-      });
+      when(mockBox.clear()).thenAnswer((_) async => 0);
 
-      await hiveService.clear('testBox');
+      await hiveService.clear();
 
-      verify(() => mockBox.clear()).called(1);
+      verify(mockBox.clear()).called(1);
     });
 
-    test('get should return the value from the box', () async {
-      when(() => mockHive.isBoxOpen('testBox')).thenReturn(true);
-      when(() => mockHive.box<String>('testBox')).thenReturn(mockBox);
-      when(() => mockBox.get('key')).thenReturn('value');
+    test('get should return value from the box', () async {
+      when(mockBox.get(key)).thenReturn(value);
 
-      final value = await hiveService.get('testBox', 'key');
+      final result = await hiveService.get(key);
 
-      expect(value, 'value');
-      verify(() => mockBox.get('key')).called(1);
+      expect(result, equals(value));
+      verify(mockBox.get(key)).called(1);
     });
 
     test('getAll should return all values from the box', () async {
-      when(() => mockHive.isBoxOpen('testBox')).thenReturn(true);
-      when(() => mockHive.box<String>('testBox')).thenReturn(mockBox);
-      when(() => mockBox.values).thenReturn(['value1', 'value2']);
+      when(mockBox.values).thenReturn([value]);
 
-      final values = await hiveService.getAll('testBox');
+      final result = await hiveService.getAll();
 
-      expect(values, ['value1', 'value2']);
-      verify(() => mockBox.values).called(1);
+      expect(result, equals([value]));
+      verify(mockBox.values).called(1);
     });
 
-    test('has should return true if the box contains the key', () async {
-      when(() => mockHive.isBoxOpen('testBox')).thenReturn(true);
-      when(() => mockHive.box<String>('testBox')).thenReturn(mockBox);
-      when(() => mockBox.containsKey('key')).thenReturn(true);
+    test('has should return true if the key exists in the box', () async {
+      when(mockBox.containsKey(key)).thenReturn(true);
 
-      final containsKey = await hiveService.has('testBox', 'key');
+      final result = await hiveService.has(key);
 
-      expect(containsKey, true);
-      verify(() => mockBox.containsKey('key')).called(1);
+      expect(result, isTrue);
+      verify(mockBox.containsKey(key)).called(1);
     });
 
     test('remove should delete the key from the box', () async {
-      when(() => mockHive.isBoxOpen('testBox')).thenReturn(true);
-      when(() => mockHive.box<String>('testBox')).thenReturn(mockBox);
-      when(() => mockBox.delete('key')).thenAnswer((_) async {});
+      when(mockBox.delete(key)).thenAnswer((_) async => Future.value());
 
-      final result = await hiveService.remove('testBox', 'key');
+      final result = await hiveService.remove(key);
 
-      expect(result, true);
-      verify(() => mockBox.delete('key')).called(1);
+      expect(result, isTrue);
+      verify(mockBox.delete(key)).called(1);
     });
 
-    test('set should save the data in the box and return the data', () async {
-      when(() => mockHive.isBoxOpen('testBox')).thenReturn(true);
-      when(() => mockHive.box<String>('testBox')).thenReturn(mockBox);
-      when(() => mockBox.put('key', 'data')).thenAnswer((_) async {});
+    test('set should store value in the box', () async {
+      when(mockBox.put(key, value)).thenAnswer((_) async => Future.value());
 
-      final result = await hiveService.set('testBox', 'key', 'data');
+      final result = await hiveService.set(key, value);
 
-      expect(result, 'data');
-      verify(() => mockBox.put('key', 'data')).called(1);
+      expect(result, equals(value));
+      verify(mockBox.put(key, value)).called(1);
     });
 
-    test('update should update the data in the box and return the data',
-        () async {
-      when(() => mockHive.isBoxOpen('testBox')).thenReturn(true);
-      when(() => mockHive.box<String>('testBox')).thenReturn(mockBox);
-      when(() => mockBox.put('key', 'updated_data')).thenAnswer((_) async {});
+    test('update should update the value in the box', () async {
+      when(mockBox.put(key, value)).thenAnswer((_) async => Future.value());
 
-      final result = await hiveService.update('testBox', 'key', 'updated_data');
+      final result = await hiveService.update(key, value);
 
-      expect(result, 'updated_data');
-      verify(() => mockBox.put('key', 'updated_data')).called(1);
+      expect(result, equals(value));
+      verify(mockBox.put(key, value)).called(1);
     });
-  });
-
-
-  tearDown(() {
-    tearDownTestHive();
   });
 }

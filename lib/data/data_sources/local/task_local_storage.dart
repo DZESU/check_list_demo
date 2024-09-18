@@ -1,57 +1,35 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:check_list_demo/shared/data/local/data_sources/storage_service.dart';
 
 import '../../../domain/entities/task.dart';
 
-final taskLocalStorageProvider = Provider((ref)=>TaskLocalStorage());
-
 class TaskLocalStorage {
+  final StorageService<Task> storageService;
   static const String boxName = "task_box";
 
-  Future<Box<Task>> _getBox() async{
-    if (Hive.isBoxOpen(boxName)) {
-      return Future.value(Hive.box<Task>(boxName));
-    }
-    return Hive.openBox<Task>(boxName);
-  }
+  TaskLocalStorage(this.storageService);
 
   Future<Task> createTask(Task task) async {
-    final box = await _getBox();
-    await box.put(task.id, task);
-    return task;
+    return storageService.set(task.id, task);
   }
 
   Future<bool> deleteTask(int id) async {
-    final box = await _getBox();
-    box.delete(id);
-    return true;
+    return storageService.remove(id);
   }
 
-  Future<bool> deleteAllTasks() async {
-    final box = await _getBox();
-    await box.clear();
-    return true;
+  Future<void> deleteAllTasks() async {
+    return storageService.clear();
   }
-
-
 
   Future<Task> updateTask(Task task) async {
-    final box = await _getBox();
-    if (box.containsKey(task.id)) {
-      box.put(task.id, task);
-    } else {
-      return createTask(task);
-    }
-    return task;
+    return storageService.update(task.id, task);
   }
 
   Future<Task?> getTaskById(int id) async {
-    final box = await _getBox();
-    return box.get(id);
+    return storageService.get(id);
   }
 
-  Future<List<Task>> getAllTask() async {
-    final box = await _getBox();
-    return box.values.toList();
+  Future<List<Task>?> getAllTasks() async {
+    final values =  await storageService.getAll();
+    return values;
   }
 }

@@ -13,5 +13,6 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(TaskAdapter());
   Hive.registerAdapter(PriorityAdapter());
+  await Hive.openBox<Task>(TaskLocalStorage.boxName);
   runApp(ProviderScope(observers: [LogObserver()], child: const App()));
 }

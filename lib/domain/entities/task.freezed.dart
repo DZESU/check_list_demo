@@ -181,11 +181,11 @@ class __$$TaskImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$TaskImpl implements _Task {
-  _$TaskImpl(
+  const _$TaskImpl(
       {@HiveField(0) this.id,
       @HiveField(1) this.title,
       @HiveField(2) this.description,
-      @HiveField(3) this.isFinished,
+      @HiveField(3) this.isFinished = false,
       @HiveField(4) this.priority = Priority.medium,
       @HiveField(5) this.createdDate,
       @HiveField(6) this.updatedDate});
@@ -200,6 +200,7 @@ class _$TaskImpl implements _Task {
   @HiveField(2)
   final String? description;
   @override
+  @JsonKey()
   @HiveField(3)
   final bool? isFinished;
   @override
@@ -251,7 +252,7 @@ class _$TaskImpl implements _Task {
 }
 
 abstract class _Task implements Task {
-  factory _Task(
+  const factory _Task(
       {@HiveField(0) final int? id,
       @HiveField(1) final String? title,
       @HiveField(2) final String? description,

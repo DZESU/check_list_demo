@@ -2,17 +2,17 @@
 abstract class StorageService<T> {
 
 
-  Future<bool> remove(String boxName, dynamic key);
+  Future<bool> remove(dynamic key);
 
-  Future<T?> get(String boxName, dynamic key);
+  Future<T?> get(dynamic key);
 
-  Future<List<T>?> getAll(String boxName);
+  Future<List<T>?> getAll();
 
-  Future<T> set(String boxName, dynamic key, T data);
+  Future<T> set(dynamic key, T data);
 
-  Future<T> update(String boxName, dynamic key, T data);
+  Future<T> update(dynamic key, T data);
 
-  Future<void> clear(String boxName);
+  Future<void> clear();
 
-  Future<bool> has(String boxName, dynamic key);
+  Future<bool> has(dynamic key);
 }

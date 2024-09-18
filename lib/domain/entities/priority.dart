@@ -7,14 +7,15 @@ part 'priority.g.dart';
 @freezed
 enum Priority {
   @HiveField(0)
-  low("Low"),
+  low("Low", 0),
   @HiveField(1)
-  medium("Medium"),
+  medium("Medium", 1),
   @HiveField(2)
-  high("High"),
+  high("High", 2),
   @HiveField(3)
-  urgent("Urgent");
+  urgent("Urgent",3);
 
-  const Priority(this.name);
+  const Priority(this.name, this.value);
+  final int value;
   final String name;
 }

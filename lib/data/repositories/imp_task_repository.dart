@@ -13,10 +13,10 @@ class ImpTaskRepository implements TaskRepository {
   @override
   Future<bool> deleteTask(int id) => _localStorage.deleteTask(id);
   @override
-  Future<bool> deleteAllTasks() => _localStorage.deleteAllTasks();
+  Future<void> deleteAllTasks() => _localStorage.deleteAllTasks();
 
   @override
-  Future<List<Task>> getAllTasks() => _localStorage.getAllTask();
+  Future<List<Task>?> getAllTasks() => _localStorage.getAllTasks();
 
   @override
   Future<Task?> getTaskById(int id) => _localStorage.getTaskById(id);
