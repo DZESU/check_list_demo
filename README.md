@@ -1,8 +1,30 @@
+
+# TODO Checklist App
+
+The TODO Checklist App is a simple task management application that allows users to create, manage, and track their tasks efficiently. This app includes features for task creation, sorting, filtering, and task visualization through a dashboard.
+
+## Features
+
+
+1. **Create a Task**: Enter a task title, description, and priority.  
+2. **Manage Tasks**: View tasks, update details, remove task, and sort/filter by priority.  
+3. **Task Dashboard**: Access the dashboard to view task statistics and progress.
+
+
+  Filter tasks to show only specific categories, such as high-priority tasks or completed ones.
+
+- **Remove Task**  
+  Delete tasks that are no longer relevant.
+
+- **Dashboard with Task Graph**  
+  The app includes a dashboard displaying a graph that visualizes the number of tasks by:
+    - **Priority Level**.
+    - **Task Completion Status** (e.g., Pending, In Progress, Completed).
+
+
+## Test Coverage
 ![Coverage](https://raw.githubusercontent.com/DZESU/check_list_demo/master/coverage_badge.svg?sanitize=true)
 
-# check_list_demo
-
-A new Flutter project.
 
 ## Flutter Doctor
 
@@ -22,3 +44,37 @@ To update CocoaPods, see https://guides.cocoapods.org/using/getting-started.html
 [✓] Connected device (4 available)
 [✓] Network resources
 
+## Getting Started
+
+To get started with the TODO Checklist App, follow the instructions below:
+
+### Prerequisites
+
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) installed.
+- A device/emulator to run the app.
+
+### Installation
+
+1. Clone the repository:
+
+    ```bash
+    git clone git@github.com:DZESU/check_list_demo.git
+    ```
+
+2. Navigate to the project directory:
+
+    ```bash
+    cd check_list_demo
+    ```
+
+3. Install dependencies:
+
+    ```bash
+    flutter pub get
+    ```
+
+4. Run the app:
+
+    ```bash
+    flutter run
+    ```
