@@ -43,7 +43,3 @@ jobs:
         with:
           name: android-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-
-      - name: Update Coverage Badge
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-        uses: we-cli/coverage-badge-action@main

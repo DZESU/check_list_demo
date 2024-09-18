@@ -1,6 +1,5 @@
+![Coverage](https://raw.githubusercontent.com/DZESU/check_list_demo/master/coverage_badge.svg?sanitize=true)
 
-
-[![cov](https://DZESU.github.io/check_list_demo/badges/coverage.svg)](https://github.com/DZESU/check_list_demo/actions)
 # check_list_demo
 
 A new Flutter project.
