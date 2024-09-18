@@ -1,16 +1,25 @@
+
+
+[![cov](https://DZESU.github.io/check_list_demo/badges/coverage.svg)](https://github.com/DZESU/check_list_demo/actions)
 # check_list_demo
 
 A new Flutter project.
 
-## Getting Started
+## Flutter Doctor
 
-This project is a starting point for a Flutter application.
+[✓] Android toolchain - develop for Android devices (Android SDK version 34.0.0)
+[!] Xcode - develop for iOS and macOS (Xcode 14.3.1)
+! Flutter recommends a minimum Xcode version of 15.
+Download the latest version or update via the Mac App Store.
+! CocoaPods 1.12.1 out of date (1.13.0 is recommended).
+CocoaPods is a package manager for iOS or macOS platform code.
+Without CocoaPods, plugins will not work on iOS or macOS.
+For more info, see https://flutter.dev/to/platform-plugins
+To update CocoaPods, see https://guides.cocoapods.org/using/getting-started.html#updating-cocoapods
+[✓] Chrome - develop for the web
+[✓] Android Studio (version 2022.2)
+[✓] VS Code (version 1.80.1)
+[✓] VS Code (version 1.80.1)
+[✓] Connected device (4 available)
+[✓] Network resources
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
