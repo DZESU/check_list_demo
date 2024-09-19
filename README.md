@@ -21,6 +21,17 @@ The TODO Checklist App is a simple task management application that allows users
     - **Priority Level**.
     - **Task Completion Status** (e.g., Pending, In Progress, Completed).
 
+## Screenshots
+
+[https://github.com/DZESU/check_list_demo/raw/main/assets/image/Screenshot_1.png]  
+[https://github.com/DZESU/check_list_demo/raw/main/assets/image/Screenshot_2.png]  
+[https://github.com/DZESU/check_list_demo/raw/main/assets/image/Screenshot_3.png] 
+
+
+## Video Demo
+
+[https://github.com/DZESU/check_list_demo/raw/main/assets/video/record_demo.mp4]  
+
 
 ## Test Coverage
 ![Coverage](https://raw.githubusercontent.com/DZESU/check_list_demo/master/coverage_badge.svg?sanitize=true)
