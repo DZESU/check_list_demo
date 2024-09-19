@@ -11,16 +11,6 @@ The TODO Checklist App is a simple task management application that allows users
 3. **Task Dashboard**: Access the dashboard to view task statistics and progress.
 
 
-  Filter tasks to show only specific categories, such as high-priority tasks or completed ones.
-
-- **Remove Task**  
-  Delete tasks that are no longer relevant.
-
-- **Dashboard with Task Graph**  
-  The app includes a dashboard displaying a graph that visualizes the number of tasks by:
-    - **Priority Level**.
-    - **Task Completion Status** (e.g., Pending, In Progress, Completed).
-
 ## Screenshots
 
 | Dashboard | Task List | Dashboard |
