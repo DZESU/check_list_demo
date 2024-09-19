@@ -122,6 +122,8 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
       controller: titleController,
       style: UITextStyle.header,
       autofocus: true,
+      maxLines: null,
+      textCapitalization: TextCapitalization.sentences,
       onChanged: readNotifier.setTitle,
       decoration: InputDecoration(
         hintText: "Title",
@@ -136,6 +138,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
       style: UITextStyle.label,
       maxLines: null,
       minLines: 1,
+      textCapitalization: TextCapitalization.sentences,
       textInputAction: TextInputAction.newline,
       onChanged: readNotifier.setDescription,
       decoration: InputDecoration(
@@ -156,9 +159,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen> {
         SizedBox(width: 16),
         MoonFilledButton(
             onTap: () async {
-              // await readNotifier.addTask(
-              //     title: titleController.text,
-              //     description: descriptionController.text);
               await readNotifier.saveTask();
               _refreshList();
               if (context.mounted) {

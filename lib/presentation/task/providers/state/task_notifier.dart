@@ -7,7 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../domain/entities/task.dart';
 import '../../../../domain/providers/task_usecase_providers.dart';
 import '../../../../domain/usecases/create_task_usecase.dart';
-import '../../../../domain/usecases/delete_task_usecase.dart';
 import '../../../../domain/usecases/get_task_by_id_usecase.dart';
 import '../../../../domain/usecases/update_task_usecase.dart';
 
@@ -16,7 +15,6 @@ final taskNotifierProvider =
         (ref) => TaskNotifier(
               ref.read(createTaskUseCaseProvider),
               ref.read(updateTaskUseCaseProvider),
-              ref.read(deleteTaskUseCaseProvider),
               ref.read(getTaskByIdUseCaseProvider),
             ));
 
@@ -24,15 +22,13 @@ class TaskNotifier extends StateNotifier<TaskState> {
   TaskNotifier(
     this._createTaskUseCase,
     this._updateTaskUseCase,
-    this._deleteTaskUseCase,
     this._getTaskByIdUseCase,
   ) : super(const TaskState.initial());
   final CreateTaskUseCase _createTaskUseCase;
   final UpdateTaskUseCase _updateTaskUseCase;
-  final DeleteTaskUseCase _deleteTaskUseCase;
   final GetTaskByIdUseCase _getTaskByIdUseCase;
 
-  void init(TaskMode taskMode, int? taskId) async {
+  Future<void> init(TaskMode taskMode, int? taskId) async {
     if (taskId != null) {
       state = state.copyWith(mode: taskMode, status: TaskStatus.loading);
       fetchTask(taskId);
@@ -55,17 +51,6 @@ class TaskNotifier extends StateNotifier<TaskState> {
     state = state.copyWith(task: state.task.copyWith(description: value));
   }
 
-  Future<void> addTask({required String title, String? description}) async {
-    final task = Task(
-        id: Random().nextInt(1000),
-        title: title,
-        description: description,
-        isFinished: false,
-        priority: state.task.priority,
-        createdDate: DateTime.now());
-    final newTask = await _createTaskUseCase(task);
-    state = state.copyWith(task: newTask);
-  }
 
   Future<void> saveTask() async {
     final task = state.task.copyWith(
@@ -99,7 +84,4 @@ class TaskNotifier extends StateNotifier<TaskState> {
     }
   }
 
-  Future<void> deleteTask(int id) async {
-    await _deleteTaskUseCase(id);
-  }
 }

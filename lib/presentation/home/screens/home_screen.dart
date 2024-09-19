@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:check_list_demo/const/ui_const.dart';
 import 'package:check_list_demo/presentation/home/providers/state/check_list_notifier.dart';
 import 'package:check_list_demo/presentation/home/widgets/empty_placeholder.dart';
@@ -12,6 +13,7 @@ import 'package:moon_design/moon_design.dart';
 import '../../../application/routes.dart';
 import '../../../domain/entities/task.dart';
 import '../providers/state/check_list_state.dart';
+import '../widgets/x_card.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -71,27 +73,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   }
 
   Widget _body(BuildContext context) {
+    final duration = Duration(milliseconds: 800);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: UIEdgeInsert.lgHori,
-          child: _header(context),
+        SlideInDown(
+          duration: duration,
+          child: Padding(
+            padding: UIEdgeInsert.lgHori,
+            child: _header(context),
+          ),
         ),
-        Padding(
-          padding: UIEdgeInsert.lgHori.add(UIEdgeInsert.mdVert),
-          child: _chart(context),
+        FadeIn(
+          duration: duration,
+          child: Padding(
+            padding: UIEdgeInsert.lgHori.add(UIEdgeInsert.mdVert),
+            child: _chart(context),
+          ),
         ),
         const SizedBox(height: 4),
-        Row(
-          children: [
-            Expanded(child: _tab(context)),
-            const SizedBox(width: 8),
-            _action(context),
-          ],
+        SlideInLeft(
+          duration: duration,
+          child: Row(
+            children: [
+              Expanded(child: _tab(context)),
+              const SizedBox(width: 8),
+              _action(context),
+            ],
+          ),
         ),
         Expanded(
-          child: _taskPageView(context),
+          child: SlideInUp(
+            duration: duration,
+            child: _taskPageView(context),
+          ),
         ),
       ],
     );
@@ -101,26 +116,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final todoTaskCount = watchState.todoTasksCount;
     final totalTaskCount = watchState.totalTasksCount;
     String message;
-    if(todoTaskCount > 1){
+    if (todoTaskCount > 1) {
       message = "📋You have $todoTaskCount to finish";
-    }else{
-      if(totalTaskCount > 1) {
+    } else {
+      if (totalTaskCount > 0) {
         message = "🏆You completed all your task";
-      }else{
-        message = '';
+      } else {
+        message = 'Start Your work with us';
       }
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text("Welcome back!🐼", style: UITextStyle.header),
-        Text(message,
-            style: UITextStyle.label.copyWith(color: UIColors.label1))
+        Text(message, style: UITextStyle.label.copyWith(color: UIColors.label1))
       ],
     );
   }
 
-  Widget _tab(BuildContext context){
+  Widget _tab(BuildContext context) {
     return MoonTabBar(
       tabController: _tabController,
       tabs: const [
@@ -128,8 +142,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             label: Text("TODO"),
             leading: Icon(MoonIcons.files_clipboard_16_light)),
         MoonTab(
-            label: Text("Archive"),
-            leading: Icon(MoonIcons.mail_box_16_light)),
+            label: Text("Archive"), leading: Icon(MoonIcons.mail_box_16_light)),
       ],
       isExpanded: true,
       onTabChanged: (value) {
@@ -150,33 +163,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final numberFormat = NumberFormat("#.#");
     final percentage = numberFormat.format(value * 100);
     return XCard(
-        child: Row(
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Current Acrchive",
-              style: UITextStyle.title.copyWith(fontWeight: FontWeight.w500),
-            ),
-            Text("Completed: $archiveTasksCount Task${archiveTasksCount > 1 ? "s":""}"),
-            Text("Todo: $todoTasksCount Task${todoTasksCount > 1 ? "s":""}"),
-          ],
-        ),
-        const Spacer(),
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            MoonCircularProgress(
-              value: value,
-              circularProgressSize: MoonCircularProgressSize.lg,
-              strokeWidth: 8,
-            ),
-            Text("$percentage%", style: UITextStyle.caption.copyWith(color: UIColors.caption1),)
-          ],
-        ),
-      ],
-    ));
+      color: Color(0xFFEBE6FA),
+      child: Row(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Current Acrchive",
+                style: UITextStyle.title.copyWith(fontWeight: FontWeight.w500),
+              ),
+              Text(
+                  "Completed: $archiveTasksCount Task${archiveTasksCount > 1 ? "s" : ""}"),
+              Text(
+                  "Todo: $todoTasksCount Task${todoTasksCount > 1 ? "s" : ""}"),
+            ],
+          ),
+          const Spacer(),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              MoonCircularProgress(
+                value: value,
+                circularProgressSize: MoonCircularProgressSize.lg,
+                strokeWidth: 8,
+              ),
+              Text(
+                "$percentage%",
+                style: UITextStyle.caption.copyWith(color: UIColors.caption1),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _action(BuildContext context) {
@@ -246,9 +266,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
 class _FilterWidget extends StatefulWidget {
   const _FilterWidget(
-      {this.values = const [],
-      this.selectedValue,
-      this.onValueChanged});
+      {this.values = const [], this.selectedValue, this.onValueChanged});
 
   final List<Sort> values;
   final Sort? selectedValue;
