@@ -33,16 +33,9 @@ The TODO Checklist App is a simple task management application that allows users
 
 
 ## Flutter Doctor
-
+[✓] Flutter (Channel stable, 3.24.2, on macOS 13.4.1 22F82 darwin-arm64, locale en-KH)
 [✓] Android toolchain - develop for Android devices (Android SDK version 34.0.0)
-[!] Xcode - develop for iOS and macOS (Xcode 14.3.1)
-! Flutter recommends a minimum Xcode version of 15.
-Download the latest version or update via the Mac App Store.
-! CocoaPods 1.12.1 out of date (1.13.0 is recommended).
-CocoaPods is a package manager for iOS or macOS platform code.
-Without CocoaPods, plugins will not work on iOS or macOS.
-For more info, see https://flutter.dev/to/platform-plugins
-To update CocoaPods, see https://guides.cocoapods.org/using/getting-started.html#updating-cocoapods
+[✓] Xcode - develop for iOS and macOS (Xcode 14.3.1)
 [✓] Chrome - develop for the web
 [✓] Android Studio (version 2022.2)
 [✓] VS Code (version 1.80.1)
