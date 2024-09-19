@@ -23,14 +23,14 @@ The TODO Checklist App is a simple task management application that allows users
 
 ## Screenshots
 
-[https://github.com/DZESU/check_list_demo/raw/main/assets/image/Screenshot_1.png]  
-[https://github.com/DZESU/check_list_demo/raw/main/assets/image/Screenshot_2.png]  
-[https://github.com/DZESU/check_list_demo/raw/main/assets/image/Screenshot_3.png] 
+[Screenshot 1](https://github.com/DZESU/check_list_demo/raw/main/assets/image/Screenshot_1.png?raw=true)  
+[Screenshot 2](https://github.com/DZESU/check_list_demo/raw/main/assets/image/Screenshot_2.png?raw=true)  
+[Screenshot 3](https://github.com/DZESU/check_list_demo/raw/main/assets/image/Screenshot_3.png?raw=true) 
 
 
 ## Video Demo
 
-[https://github.com/DZESU/check_list_demo/raw/main/assets/video/record_demo.mp4]  
+[Video Demo](https://github.com/DZESU/check_list_demo/raw/main/assets/video/record_demo.mp4?raw=true)  
 
 
 ## Test Coverage
