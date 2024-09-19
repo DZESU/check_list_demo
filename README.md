@@ -33,15 +33,15 @@ The TODO Checklist App is a simple task management application that allows users
 
 
 ## Flutter Doctor
-[✓] Flutter (Channel stable, 3.24.2, on macOS 13.4.1 22F82 darwin-arm64, locale en-KH)
-[✓] Android toolchain - develop for Android devices (Android SDK version 34.0.0)
-[✓] Xcode - develop for iOS and macOS (Xcode 14.3.1)
-[✓] Chrome - develop for the web
-[✓] Android Studio (version 2022.2)
-[✓] VS Code (version 1.80.1)
-[✓] VS Code (version 1.80.1)
-[✓] Connected device (4 available)
-[✓] Network resources
+- [✓] Flutter (Channel stable, 3.24.2, on macOS 13.4.1 22F82 -darwin-arm64, locale en-KH)
+- [✓] Android toolchain - develop for Android devices -(Android SDK version 34.0.0)
+- [✓] Xcode - develop for iOS and macOS (Xcode 14.3.1)
+- [✓] Chrome - develop for the web
+- [✓] Android Studio (version 2022.2)
+- [✓] VS Code (version 1.80.1)
+- [✓] VS Code (version 1.80.1)
+- [✓] Connected device (4 available)
+- [✓] Network resources
 
 ## Getting Started
 
