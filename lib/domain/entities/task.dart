@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:check_list_demo/domain/entities/priority.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
@@ -21,8 +19,4 @@ class Task with _$Task {
     @HiveField(6) DateTime? updatedDate,
   }) = _Task;
 
-  factory Task.random({int? id}) {
-    final tid = id ?? Random().nextInt(1000);
-    return Task(id: tid, title: "$tid title", createdDate: DateTime.now());
-  }
 }

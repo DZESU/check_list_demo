@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:moon_design/moon_design.dart';
 
 import '../../../domain/entities/task.dart';
+import 'x_card.dart';
 
 class TaskTile extends ConsumerStatefulWidget {
   const TaskTile({
@@ -110,31 +111,6 @@ class _TaskTileState extends ConsumerState<TaskTile> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class XCard extends StatelessWidget {
-  const XCard({super.key, required this.child, this.padding});
-
-  final Widget child;
-  final EdgeInsets? padding;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: padding ?? UIEdgeInsert.md,
-      decoration: BoxDecoration(
-          color: context.moonColors?.goku,
-          borderRadius: UIStyle.cardBorderRadius,
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x22000000),
-              offset: Offset(0, 4),
-              blurRadius: 4,
-            ),
-          ]),
-      child: child,
     );
   }
 }

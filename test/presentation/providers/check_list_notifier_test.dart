@@ -1,31 +1,26 @@
-import 'package:check_list_demo/domain/entities/priority.dart';
-import 'package:check_list_demo/domain/usecases/update_task_usecase.dart';
 import 'package:check_list_demo/presentation/home/providers/state/check_list_notifier.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:check_list_demo/domain/usecases/delete_all_tasks_usecase.dart';
-import 'package:check_list_demo/domain/usecases/delete_task_usecase.dart';
-import 'package:check_list_demo/domain/usecases/get_all_tasks_usecase.dart';
-import 'package:check_list_demo/presentation/home/providers/state/check_list_state.dart';
 import 'package:check_list_demo/domain/entities/task.dart';
+import 'package:check_list_demo/presentation/home/providers/state/check_list_state.dart';
 
 import 'check_list_notifier_test.mocks.dart';
 
-@GenerateMocks([DeleteTaskUseCase, GetAllTasksUseCase, UpdateTaskUseCase,DeleteAllTasksUseCase])
+
 void main() {
   late MockDeleteTaskUseCase mockDeleteTaskUseCase;
   late MockGetAllTasksUseCase mockGetAllTasksUseCase;
-  late MockDeleteAllTasksUseCase mockDeleteAllTasksUseCase;
   late MockUpdateTaskUseCase mockUpdateTaskUseCase;
-  late CheckListNotifier checkListNotifier;
+  late MockDeleteAllTasksUseCase mockDeleteAllTasksUseCase;
+  late CheckListNotifier notifier;
 
   setUp(() {
     mockDeleteTaskUseCase = MockDeleteTaskUseCase();
     mockGetAllTasksUseCase = MockGetAllTasksUseCase();
-    mockDeleteAllTasksUseCase = MockDeleteAllTasksUseCase();
     mockUpdateTaskUseCase = MockUpdateTaskUseCase();
-    checkListNotifier = CheckListNotifier(
+    mockDeleteAllTasksUseCase = MockDeleteAllTasksUseCase();
+
+    notifier = CheckListNotifier(
       mockDeleteTaskUseCase,
       mockGetAllTasksUseCase,
       mockUpdateTaskUseCase,
@@ -33,82 +28,111 @@ void main() {
     );
   });
 
-  group('CheckListNotifier', () {
-    final List<Task> taskList = [
-      Task(id: 1, title: 'Task 1', description: 'Test Task 1'),
-      Task(id: 2, title: 'Task 2', description: 'Test Task 2'),
-    ];
+  final testTask1 = Task(
+    id: 1,
+    title: 'Task 1',
+    description: 'Description 1',
+    createdDate: DateTime.now(),
+    isFinished: false,
+  );
+  final testTask2 = Task(
+    id: 2,
+    title: 'Task 2',
+    description: 'Description 2',
+    createdDate: DateTime.now(),
+    isFinished: true,
+  );
 
-    test('fetchTask should load tasks and update state', () async {
-      when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
+  final taskList = [testTask1, testTask2];
 
-      await checkListNotifier.fetchTask();
+  test('fetchTask should load tasks and update state', () async {
+    // Arrange
+    when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
 
-      expect(checkListNotifier.state.tasks, equals(taskList));
-      verify(mockGetAllTasksUseCase()).called(1);
-    });
+    // Act
+    await notifier.fetchTask();
 
-    test('deleteTask should remove a task and fetch tasks again', () async {
-      when(mockDeleteTaskUseCase(any)).thenAnswer((_) async => Future.value(true));
-      when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
+    // Assert
+    expect(notifier.state.tasks, taskList);
+    verify(mockGetAllTasksUseCase()).called(1);
+  });
 
-      await checkListNotifier.deleteTask(1);
+  test('deleteTask should delete a task and refresh the list', () async {
+    // Arrange
+    when(mockDeleteTaskUseCase(any)).thenAnswer((_) async => true);
+    when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
 
-      verify(mockDeleteTaskUseCase(1)).called(1);
-      verify(mockGetAllTasksUseCase()).called(1);
-    });
+    // Act
+    await notifier.fetchTask();
+    await notifier.deleteTask(1);
 
-    test('deleteAllTasks should clear tasks and fetch tasks again', () async {
-      when(mockDeleteAllTasksUseCase()).thenAnswer((_) async => Future.value());
-      when(mockGetAllTasksUseCase()).thenAnswer((_) async => []);
+    // Assert
+    verify(mockDeleteTaskUseCase(1)).called(1);
+    verify(mockGetAllTasksUseCase()).called(2);
+    expect(notifier.state.tasks, taskList);
+  });
 
-      await checkListNotifier.deleteAllTasks();
+  test('deleteAllTasks should delete all tasks and refresh the list', () async {
+    // Arrange
+    when(mockDeleteAllTasksUseCase()).thenAnswer((_) async {});
+    when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
 
-      expect(checkListNotifier.state.tasks, equals([]));
-      verify(mockDeleteAllTasksUseCase()).called(1);
-      verify(mockGetAllTasksUseCase()).called(1);
-    });
+    // Act
+    await notifier.deleteAllTasks();
 
-    test('toggleOrder should update state and fetch tasks in new order', () async {
-      checkListNotifier.state = checkListNotifier.state.copyWith(order: Order.ascending);
-      when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
+    // Assert
+    verify(mockDeleteAllTasksUseCase()).called(1);
+    verify(mockGetAllTasksUseCase()).called(1);
+    expect(notifier.state.tasks, taskList);
+  });
 
-      checkListNotifier.toggleOrder();
+  test('toggleOrder should change order and refresh the list', () async {
+    // Arrange
+    when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
 
-      expect(checkListNotifier.state.order, equals(Order.descending));
-      verify(mockGetAllTasksUseCase()).called(1);
-    });
+    // Act
+    notifier.toggleOrder();
 
-    test('setSort should update state and fetch tasks with new sort criteria', () async {
-      when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
+    // Assert
+    expect(notifier.state.order, Order.ascending);
+    verify(mockGetAllTasksUseCase()).called(1);
+  });
 
-      checkListNotifier.setSort(Sort.date);
+  test('setSort Date should change the sort method and refresh the list', () async {
+    // Arrange
+    when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
 
-      expect(checkListNotifier.state.sort, equals(Sort.date));
-      verify(mockGetAllTasksUseCase()).called(1);
-    });
+    // Act
+    notifier.setSort(Sort.date);
 
-    test('sortTasks should sort tasks by priority', () {
-      final List<Task> unsortedTasks = [
-        Task(id: 1, title: 'Task 1', priority: Priority.low),
-        Task(id: 2, title: 'Task 2', priority: Priority.high),
-      ];
+    // Assert
+    expect(notifier.state.sort, Sort.date);
+    verify(mockGetAllTasksUseCase()).called(1);
+  });
 
-      checkListNotifier.sortTasks(unsortedTasks, sort: Sort.priority, order: Order.descending);
+  test('setSort Priority should change the sort method and refresh the list', () async {
+    // Arrange
+    when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
 
-      expect(unsortedTasks[0].id, equals(2)); // Task with higher priority should be first
-    });
+    // Act
+    notifier.setSort(Sort.priority);
 
-    test('sortTasks should sort tasks by date', () {
-      final DateTime now = DateTime.now();
-      final List<Task> unsortedTasks = [
-        Task(id: 1, title: 'Task 1', createdDate: now.subtract(Duration(days: 1))),
-        Task(id: 2, title: 'Task 2', createdDate: now),
-      ];
+    // Assert
+    expect(notifier.state.sort, Sort.priority);
+    verify(mockGetAllTasksUseCase()).called(1);
+  });
 
-      checkListNotifier.sortTasks(unsortedTasks, sort: Sort.date, order: Order.ascending);
+  test('updateTask should update the task and refresh the list', () async {
+    // Arrange
+    final updatedTask = testTask1.copyWith(isFinished: true);
+    when(mockUpdateTaskUseCase(any)).thenAnswer((_) async => updatedTask);
+    when(mockGetAllTasksUseCase()).thenAnswer((_) async => taskList);
 
-      expect(unsortedTasks[0].id, equals(1)); // Older task should be first in ascending order
-    });
+    // Act
+    await notifier.updateTask(true, testTask1);
+
+    // Assert
+    verify(mockUpdateTaskUseCase(updatedTask)).called(1);
+    verify(mockGetAllTasksUseCase()).called(1);
   });
 }

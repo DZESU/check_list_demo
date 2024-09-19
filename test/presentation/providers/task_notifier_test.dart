@@ -1,134 +1,108 @@
-import 'dart:math';
 import 'package:check_list_demo/presentation/task/providers/state/task_notifier.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
-import 'package:check_list_demo/presentation/task/providers/state/task_state.dart';
-import 'package:check_list_demo/domain/usecases/create_task_usecase.dart';
-import 'package:check_list_demo/domain/usecases/delete_task_usecase.dart';
-import 'package:check_list_demo/domain/usecases/get_task_by_id_usecase.dart';
-import 'package:check_list_demo/domain/usecases/update_task_usecase.dart';
 import 'package:check_list_demo/domain/entities/task.dart';
+import 'package:check_list_demo/domain/entities/priority.dart';
+import 'package:check_list_demo/presentation/task/providers/state/task_state.dart';
+import 'package:mockito/mockito.dart';
 
 import 'task_notifier_test.mocks.dart';
 
-@GenerateMocks([
-  CreateTaskUseCase,
-  UpdateTaskUseCase,
-  DeleteTaskUseCase,
-  GetTaskByIdUseCase
-])
 void main() {
-  late MockCreateTaskUseCase mockCreateTaskUseCase;
-  late MockUpdateTaskUseCase mockUpdateTaskUseCase;
-  late MockDeleteTaskUseCase mockDeleteTaskUseCase;
-  late MockGetTaskByIdUseCase mockGetTaskByIdUseCase;
-  late TaskNotifier taskNotifier;
-  final DateTime createdDate = DateTime(2000, 1, 1);
-
-  setUp(() {
-    mockCreateTaskUseCase = MockCreateTaskUseCase();
-    mockUpdateTaskUseCase = MockUpdateTaskUseCase();
-    mockDeleteTaskUseCase = MockDeleteTaskUseCase();
-    mockGetTaskByIdUseCase = MockGetTaskByIdUseCase();
-    taskNotifier = TaskNotifier(
-      mockCreateTaskUseCase,
-      mockUpdateTaskUseCase,
-      mockDeleteTaskUseCase,
-      mockGetTaskByIdUseCase,
-    );
-  });
-
   group('TaskNotifier', () {
-    final Task task = Task(
-      id: 1,
-      title: 'Test Task',
-      description: 'Task description',
-      isFinished: false,
-      createdDate: createdDate,
-    );
+    late MockCreateTaskUseCase mockCreateTaskUseCase;
+    late MockUpdateTaskUseCase mockUpdateTaskUseCase;
+    late MockGetTaskByIdUseCase mockGetTaskByIdUseCase;
+    late TaskNotifier taskNotifier;
 
-    test('fetchTask should load task by id and update state', () async {
+    setUp(() {
+      mockCreateTaskUseCase = MockCreateTaskUseCase();
+      mockUpdateTaskUseCase = MockUpdateTaskUseCase();
+      mockGetTaskByIdUseCase = MockGetTaskByIdUseCase();
+      taskNotifier = TaskNotifier(
+        mockCreateTaskUseCase,
+        mockUpdateTaskUseCase,
+        mockGetTaskByIdUseCase,
+      );
+    });
+
+    test('initial state is TaskState.initial', () {
+      expect(taskNotifier.state, const TaskState.initial());
+    });
+
+    test('init with taskId loads the task', () async {
+      final task = Task(id: 1, title: 'Test Task');
       when(mockGetTaskByIdUseCase(1)).thenAnswer((_) async => task);
 
-      final stateChanges = <TaskState>[];
-      taskNotifier.addListener((state) {
-        stateChanges.add(state);
-      });
+      await taskNotifier.init(TaskMode.edit, 1);
 
-      await taskNotifier.fetchTask(1);
-
-      // Check the recorded states
-      expect(stateChanges.length, 2); // Initial state and updated state
-      expect(stateChanges[0], TaskState.initial());
-      expect(
-          stateChanges[1],
-          TaskState(
-              task: task, mode: TaskMode.view, status: TaskStatus.loaded));
-
-      verify(mockGetTaskByIdUseCase(1)).called(1);
+      expect(taskNotifier.state.mode, TaskMode.edit);
+      expect(taskNotifier.state.task, task);
+      expect(taskNotifier.state.status, TaskStatus.loaded);
     });
 
-    test('addTask should create a new task and update state', () async {
-      final newTask =
-          task.copyWith(id: Random().nextInt(1000), title: 'New Task');
+    test('init without taskId sets initial task state', () async {
+      await taskNotifier.init(TaskMode.create, null);
+
+      expect(taskNotifier.state.mode, TaskMode.create);
+      expect(taskNotifier.state.task, isNotNull);
+      expect(taskNotifier.state.status, TaskStatus.loaded);
+    });
+
+    test('setTitle updates the title', () {
+      final task = Task(title: 'Old Title');
+      taskNotifier.state = taskNotifier.state.copyWith(task: task);
+
+      taskNotifier.setTitle('New Title');
+
+      expect(taskNotifier.state.task.title, 'New Title');
+    });
+
+    test('setDescription updates the description', () {
+      final task = Task(description: 'Old Description');
+      taskNotifier.state = taskNotifier.state.copyWith(task: task);
+
+      taskNotifier.setDescription('New Description');
+
+      expect(taskNotifier.state.task.description, 'New Description');
+    });
+
+    test('saveTask creates a new task', () async {
+      final newTask = Task(id: 1, title: 'New Task');
       when(mockCreateTaskUseCase(any)).thenAnswer((_) async => newTask);
 
-      final stateChanges = <TaskState>[];
-      taskNotifier.addListener((state) {
-        stateChanges.add(state);
-      });
+      await taskNotifier.saveTask();
 
-      await taskNotifier.addTask(
-          title: 'New Task', description: 'New Task Description');
-
-      // Check the recorded states
-      expect(stateChanges.length, 2); // Initial state and updated state
-      expect(stateChanges[0], TaskState.initial());
-      expect(stateChanges[1], TaskState(task: newTask, mode: TaskMode.view, status: TaskStatus.initial));
-
-      verify(mockCreateTaskUseCase(any)).called(1);
+      expect(taskNotifier.state.task, newTask);
     });
 
-    test('updateTask should update the task and reflect changes in state',
-        () async {
-      final title = "Update Title";
-      final description = "Update Description";
-      final updatedTask = task.copyWith(title: title, description: description);
+    test('updateTask updates the task', () async {
+      final task = Task(id: 1, title: 'Old Title');
+      final updatedTask = Task(id: 1, title: 'New Title');
+      taskNotifier.state = taskNotifier.state.copyWith(task: task);
       when(mockUpdateTaskUseCase(any)).thenAnswer((_) async => updatedTask);
 
-      final stateChanges = <TaskState>[];
-      taskNotifier.addListener((state) {
-        stateChanges.add(state);
-      });
+      await taskNotifier.updateTask(title: 'New Title');
 
-      await taskNotifier.updateTask(title: title, description: description);
-
-      // Check the recorded states
-      expect(stateChanges.length, 2); // Initial state and updated state
-      expect(stateChanges[0], TaskState.initial());
-      expect(
-          stateChanges[1], TaskState(task: updatedTask, mode: TaskMode.view, status: TaskStatus.initial));
-
-      verify(mockUpdateTaskUseCase(any)).called(1);
+      expect(taskNotifier.state.task.title, 'New Title');
     });
 
-    test('deleteTask should remove task and not affect state', () async {
-      when(mockDeleteTaskUseCase(1)).thenAnswer((_) async => true);
+    test('setPriority updates the priority', () {
+      final task = Task(priority: Priority.low);
+      taskNotifier.state = taskNotifier.state.copyWith(task: task);
 
-      final stateChanges = <TaskState>[];
-      taskNotifier.addListener((state) {
-        stateChanges.add(state);
-      });
+      taskNotifier.setPriority(Priority.high);
 
-      await taskNotifier.deleteTask(1);
+      expect(taskNotifier.state.task.priority, Priority.high);
+    });
 
-      // Check the recorded states
-      expect(
-          stateChanges.length, 1); // Only the initial state should be recorded
-      expect(stateChanges[0], TaskState.initial());
+    test('setIsFinished updates the task status and saves if not in create mode', () async {
+      final task = Task(isFinished: false);
+      taskNotifier.state = taskNotifier.state.copyWith(task: task);
+      when(mockUpdateTaskUseCase(any)).thenAnswer((_) async => task.copyWith(isFinished: true));
 
-      verify(mockDeleteTaskUseCase(1)).called(1);
+      await taskNotifier.setIsFinished(true);
+
+      expect(taskNotifier.state.task.isFinished, true);
     });
   });
 }

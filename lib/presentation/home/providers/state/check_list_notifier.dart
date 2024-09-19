@@ -83,9 +83,9 @@ class CheckListNotifier extends StateNotifier<CheckListState> {
     });
   }
 
-  void updateTask(bool? value, Task task) async {
+  Future<void> updateTask(bool? value, Task task) async {
     final newTask = task.copyWith(isFinished: value);
     await _updateTaskUseCase(newTask);
-    fetchTask();
+    await fetchTask();
   }
 }

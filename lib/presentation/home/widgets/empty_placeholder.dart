@@ -12,7 +12,7 @@ class EmptyPlaceholder extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 100,child: SvgPicture.asset("assets/svg/empty_state.svg")),
+          Flexible(child: SizedBox(height: 100,child: SvgPicture.asset("assets/svg/empty_state.svg"))),
           SizedBox(height: 12),
           Text("No task available", style: UITextStyle.label.copyWith(color: UIColors.title1),),
         ],
